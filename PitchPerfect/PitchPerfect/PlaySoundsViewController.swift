@@ -11,6 +11,8 @@ import AVFoundation
 
 class PlaySoundsViewController: UIViewController {
     
+    // MARK: - Outlets
+    
     @IBOutlet weak var snailButton: UIButton!
     @IBOutlet weak var chipmunkButton: UIButton!
     @IBOutlet weak var rabbitButton: UIButton!
@@ -18,6 +20,8 @@ class PlaySoundsViewController: UIViewController {
     @IBOutlet weak var echoButton: UIButton!
     @IBOutlet weak var reverbButton: UIButton!
     @IBOutlet weak var stopButton: UIButton!
+    
+    // MARK: - Variables/Constants
     
     var recordedAudioURL: URL!
     var audioFile: AVAudioFile!
@@ -28,10 +32,21 @@ class PlaySoundsViewController: UIViewController {
     enum ButtonType: Int {
         case slow = 0, fast, chipmunk, vader, echo, reverb
     }
+    
+    // MARK: - Lifecycle methods
 
     override func viewDidLoad() {
         print("viewDidLoad")
         super.viewDidLoad()
+        
+        snailButton.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
+        chipmunkButton.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
+        rabbitButton.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
+        vaderButton.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
+        echoButton.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
+        reverbButton.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
+        stopButton.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
+        
         setupAudio()
     }
     
@@ -41,6 +56,13 @@ class PlaySoundsViewController: UIViewController {
         configureUI(.notPlaying)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        stopAudio()
+    }
+    
+    // MARK: - Actions
+    
     @IBAction func playSoundForButton(_ sender: UIButton) {
         
         let buttonType = ButtonType(rawValue: sender.tag)
@@ -49,6 +71,7 @@ class PlaySoundsViewController: UIViewController {
         switch buttonType {
         case .slow:
             playSound(rate: 0.5)
+            snailButton.imageView?.contentMode = UIView.ContentMode.scaleAspectFit
         case .fast:
             playSound(rate: 1.5)
         case .chipmunk:

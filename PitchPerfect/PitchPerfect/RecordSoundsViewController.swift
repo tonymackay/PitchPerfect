@@ -11,17 +11,18 @@ import AVFoundation;
 
 class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     
-    var audioRecorder: AVAudioRecorder!
-    
+    // MARK: - Outlets
+
     @IBOutlet weak var recordingLabel: UILabel!
     @IBOutlet weak var recordButton: UIButton!
     @IBOutlet weak var stopRecordingButton: UIButton!
     
-    func configureButtons(_ enabled: Bool) {
-        stopRecordingButton.isEnabled = enabled
-        recordButton.isEnabled = !enabled
-        recordingLabel.text = recordButton.isEnabled ? "Tap to Record" : "Recording in Progress"
-    }
+    // MARK: - Variables/Constants
+    
+    var audioRecorder: AVAudioRecorder!
+    let segueIdentifier = "stopRecording"
+    
+    // MARK: - Lifecycle methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,6 +55,17 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        print("prepare segue called")
+        if segue.identifier == segueIdentifier {
+            let playSoundsVC = segue.destination as! PlaySoundsViewController
+            let recordedAudioURL = sender as! URL
+            playSoundsVC.recordedAudioURL = recordedAudioURL
+        }
+    }
+    
+    // MARK: - Actions
 
     @IBAction func recordAudio(_ sender: Any) {
         if audioRecorder.isRecording == false {
@@ -69,21 +81,22 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         configureButtons(false)
     }
     
+    // MARK: - Private methods
+    
+    func configureButtons(_ enabled: Bool) {
+        stopRecordingButton.isEnabled = enabled
+        recordButton.isEnabled = !enabled
+        recordingLabel.text = recordButton.isEnabled ? "Tap to Record" : "Recording in Progress"
+    }
+    
+    // MARK: - Delegate methods
+    
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool){
         print("audioRecorderDidFinishRecording: url: \(audioRecorder.url)")
         if flag {
-            performSegue(withIdentifier: "stopRecording", sender: audioRecorder.url)
+            performSegue(withIdentifier: segueIdentifier, sender: audioRecorder.url)
         } else {
             print("recording failed")
-        }
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        print("prepare segue called")
-        if segue.identifier == "stopRecording" {
-            let playSoundsVC = segue.destination as! PlaySoundsViewController
-            let recordedAudioURL = sender as! URL
-            playSoundsVC.recordedAudioURL = recordedAudioURL
         }
     }
 }
